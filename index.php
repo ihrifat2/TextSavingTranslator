@@ -62,8 +62,8 @@
 					<p>
 						<img src="img/LoaderIcon.gif" id="loaderIcon" style="display:none; width: 30px">
 					</p>
-					<button class="">
-						<i class="fa fa-volume-up fa-w-18" style="color: #fff;"></i>
+					<button type="button" class="btn btn-amber" onclick="textToSpeech()">
+						<i class="fa fa-volume-up fa-w-18 fa-2x" style="color: #fff;"></i>
 					</button>
 				</div>
 			</div>
@@ -97,7 +97,7 @@
         }
         function textToSpeech() {
         	var text = document.getElementById("textareaTranslator").value;
-        	console.log(text);
+        	responsiveVoice.speak(text);
         }
 	</script>
 	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>

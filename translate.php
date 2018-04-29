@@ -1,9 +1,17 @@
 <?php
+error_reporting(0);
 require_once ('vendor/autoload.php');
 require 'db_connection.php';
 use \Statickidz\GoogleTranslate;
 
-if (isset($_POST['textareaTranslator']) && $_POST['textareaTranslator'] != NULL) {
+set_error_handler("noInternetError",E_ALL);
+function noInternetError($errno, $errstr)
+{
+	echo "No Internet Connection.";
+	die();
+}
+
+if (isset($_POST['textareaTranslator']) && $_POST['textareaTranslator'] != NULL && $_POST['textareaTranslator'] != '') {
 	$source = 'en';
 	$target = 'bn';
 	$text = strtolower($_POST['textareaTranslator']);
@@ -12,18 +20,32 @@ if (isset($_POST['textareaTranslator']) && $_POST['textareaTranslator'] != NULL)
 
 	$trans = new GoogleTranslate();
 	$result = $trans->translate($source, $target, $text);
+	$printResult = strtolower($result);
+	$textlen = strlen($text) - 1;
+	$resultlen = strlen($printResult);
+	
+/*
+	echo "text : " . $textlen . " : ";
+	echo "result : " . $resultlen . " : ";
+
+	echo "text : " . strtolower($text) . " : ";
+	echo "result : " . strtolower($printResult) . " : ";
+*/
 
 	if ($ifWordAlreadyExist == 1) {
-		$translate_query = "INSERT INTO `word_list`(`id`, `english_word`, `bangla_word`) VALUES (NULL, '$text', '$result')";
-		$translate_result = mysqli_query($connect, $translate_query);
-		if ($translate_result) {
-			echo $result;
+		if ($textlen == $resultlen) {
+			echo $printResult;
 		} else {
-			echo "Error.";
-			echo mysqli_error($connect);
+			$translate_query = "INSERT INTO `word_list`(`id`, `english_word`, `bangla_word`) VALUES (NULL, '$text', '$printResult')";
+			$translate_printResult = mysqli_query($connect, $translate_query);
+			if ($translate_printResult) {
+				echo $printResult;
+			} else {
+				echo "Error.";
+			}
 		}
 	} else {
-		echo $result;
+		echo $printResult;
 	}
 } else {
 	echo "Please Write Something";
@@ -32,8 +54,8 @@ if (isset($_POST['textareaTranslator']) && $_POST['textareaTranslator'] != NULL)
 function ifWordAlreadyExist($word)
 {
 	$WAE_query = "SELECT `english_word` FROM `word_list` WHERE `english_word` = '$word'";
-	$WAE_result = mysqli_query($GLOBALS['connect'], $WAE_query);
-	$WAE_row = mysqli_fetch_assoc($WAE_result);
+	$WAE_printResult = mysqli_query($GLOBALS['connect'], $WAE_query);
+	$WAE_row = mysqli_fetch_assoc($WAE_printResult);
 	if ($WAE_row) {
 		return 0;
 	} else {
